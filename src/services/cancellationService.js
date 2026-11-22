@@ -4,6 +4,7 @@ const HttpError = require('../utils/HttpError');
 const { calculateRefund } = require('./refundPolicy');
 const { parseClinicDateTime, formatClinicDateTime } = require('../utils/clinicTime');
 const auditLog = require('../utils/auditLogger');
+const { notifySlotFreed } = require('./waitlistService');
 
 /**
  * Cancels an appointment and records the refund in one transaction.
@@ -47,7 +48,8 @@ async function cancelAppointment(appointmentId, { now, timezoneOffset }) {
     };
   });
 
-  // Only reached after COMMIT. Not awaited: logging must never slow down or fail the cancellation.
+  // Only reached after COMMIT. Not awaited: logging and queueing must never
+  // slow down or fail the cancellation (both handle their own errors).
   auditLog.logEvent('APPOINTMENT_CANCELLED', {
     appointment_id: appointmentId,
     patient_id: result.appointment.patient_id,
@@ -56,6 +58,7 @@ async function cancelAppointment(appointmentId, { now, timezoneOffset }) {
     cancelled_at: result.appointment.cancelled_at,
     ...result.refund,
   });
+  notifySlotFreed(result.appointment);
 
   return result;
 }

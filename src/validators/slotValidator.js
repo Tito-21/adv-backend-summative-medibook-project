@@ -78,4 +78,12 @@ function validateAppointmentSlot(input, { now, timezoneOffset }) {
   return { isFormatError: false, errors: [], slot: { dbValue, date, at } };
 }
 
-module.exports = { validateAppointmentSlot };
+const DATE_PATTERN = /^(\d{4})-(\d{2})-(\d{2})$/;
+
+/** True for a real calendar date written as YYYY-MM-DD. */
+function isValidDate(value) {
+  const match = typeof value === 'string' ? DATE_PATTERN.exec(value) : null;
+  return Boolean(match) && isRealCalendarDate(Number(match[1]), Number(match[2]), Number(match[3]));
+}
+
+module.exports = { validateAppointmentSlot, isValidDate };
