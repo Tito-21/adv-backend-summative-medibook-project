@@ -2,6 +2,7 @@ require('dotenv').config({ quiet: true });
 
 const config = {
   port: Number(process.env.PORT) || 3000,
+  logDir: process.env.LOG_DIR || 'logs',
   db: {
     host: process.env.DB_HOST,
     port: Number(process.env.DB_PORT) || 3306,
