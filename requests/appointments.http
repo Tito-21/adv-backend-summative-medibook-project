@@ -88,3 +88,23 @@ Content-Type: application/json
   "doctor_id": 2,
   "appt_datetime": "next tuesday"
 }
+
+### --- Cancellation (ids from a fresh seed) ---
+
+### Cancel with less than 24h notice -> 200, refund 0%
+DELETE {{baseUrl}}/appointments/16
+
+### Cancel with 24-48h notice -> 200, refund 50%
+DELETE {{baseUrl}}/appointments/17
+
+### Cancel with more than 48h notice -> 200, refund 100%
+DELETE {{baseUrl}}/appointments/18
+
+### Cancel the same appointment again -> 409
+DELETE {{baseUrl}}/appointments/18
+
+### Cancel a past appointment -> 422
+DELETE {{baseUrl}}/appointments/1
+
+### The cancelled record is kept for refund history
+GET {{baseUrl}}/appointments/18
