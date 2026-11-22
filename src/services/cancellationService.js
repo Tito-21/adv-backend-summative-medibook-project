@@ -3,6 +3,7 @@ const { withTransaction } = require('../models/transaction');
 const HttpError = require('../utils/HttpError');
 const { calculateRefund } = require('./refundPolicy');
 const { parseClinicDateTime, formatClinicDateTime } = require('../utils/clinicTime');
+const auditLog = require('../utils/auditLogger');
 
 /**
  * Cancels an appointment and records the refund in one transaction.
@@ -10,7 +11,7 @@ const { parseClinicDateTime, formatClinicDateTime } = require('../utils/clinicTi
  * from the client.
  */
 async function cancelAppointment(appointmentId, { now, timezoneOffset }) {
-  return withTransaction(async (tx) => {
+  const result = await withTransaction(async (tx) => {
     const appointment = await Appointment.findByIdForUpdate(appointmentId, tx);
     if (!appointment) throw HttpError.notFound(`Appointment ${appointmentId} not found`);
 
@@ -45,6 +46,18 @@ async function cancelAppointment(appointmentId, { now, timezoneOffset }) {
       },
     };
   });
+
+  // Only reached after COMMIT. Not awaited: logging must never slow down or fail the cancellation.
+  auditLog.logEvent('APPOINTMENT_CANCELLED', {
+    appointment_id: appointmentId,
+    patient_id: result.appointment.patient_id,
+    doctor_id: result.appointment.doctor_id,
+    appt_datetime: result.appointment.appt_datetime,
+    cancelled_at: result.appointment.cancelled_at,
+    ...result.refund,
+  });
+
+  return result;
 }
 
 module.exports = { cancelAppointment };

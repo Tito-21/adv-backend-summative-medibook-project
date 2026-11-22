@@ -4,6 +4,7 @@ const Patient = require('../models/patientModel');
 const { withTransaction } = require('../models/transaction');
 const HttpError = require('../utils/HttpError');
 const { MAX_APPOINTMENTS_PER_DAY } = require('../config/businessRules');
+const auditLog = require('../utils/auditLogger');
 
 function slotUnavailable(reason, message) {
   return HttpError.conflict(message, { reason, waitlist_available: true });
@@ -16,7 +17,7 @@ function slotUnavailable(reason, message) {
  * see every booking committed before ours.
  */
 async function bookAppointment({ patientId, doctorId, slot }) {
-  return withTransaction(async (tx) => {
+  const appointment = await withTransaction(async (tx) => {
     const doctor = await Doctor.findByIdForUpdate(doctorId, tx);
     if (!doctor) throw HttpError.notFound(`Doctor ${doctorId} not found`);
 
@@ -49,6 +50,17 @@ async function bookAppointment({ patientId, doctorId, slot }) {
       tx,
     );
   });
+
+  // Only reached after COMMIT. Not awaited: logging must never slow down or fail the booking.
+  auditLog.logEvent('APPOINTMENT_BOOKED', {
+    appointment_id: appointment.appointment_id,
+    patient_id: appointment.patient_id,
+    doctor_id: appointment.doctor_id,
+    appt_datetime: appointment.appt_datetime,
+    amount_paid: appointment.amount_paid,
+  });
+
+  return appointment;
 }
 
 module.exports = { bookAppointment };
