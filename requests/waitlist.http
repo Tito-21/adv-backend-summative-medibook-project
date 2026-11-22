@@ -1,0 +1,48 @@
+# Waitlist - open in VS Code and click "Send Request" (REST Client extension).
+# Demo flow (fresh `npm run db:setup`, worker running in a second terminal: `npm run worker`):
+#   1. book the 12th slot of the near-cap day       (appointments.http)
+#   2. a 13th booking gets 409 DAY_FULL with a waitlist offer
+#   3. join the waitlist below
+#   4. cancel one of that day's appointments -> the worker books the waitlisted patient
+# Set @nearCapDay to today + 3 days (the seed's near-cap day for Dr. Boateng).
+@baseUrl = http://localhost:3000/api
+@nearCapDay = 2026-11-25
+
+### Join the waitlist after a 409 (same body as the booking) -> 201 with position
+POST {{baseUrl}}/waitlist
+Content-Type: application/json
+
+{
+  "patient_id": 4,
+  "doctor_id": 1,
+  "appt_datetime": "{{nearCapDay}}T16:00"
+}
+
+### Join again -> 409 already on this waitlist
+POST {{baseUrl}}/waitlist
+Content-Type: application/json
+
+{
+  "patient_id": 4,
+  "doctor_id": 1,
+  "appt_datetime": "{{nearCapDay}}T16:00"
+}
+
+### See who is waiting for Dr. Boateng that day
+GET {{baseUrl}}/waitlist?doctor_id=1&date={{nearCapDay}}
+
+### Cancel the 09:00 appointment -> worker promotes patient 4 into 09:00
+DELETE {{baseUrl}}/appointments/5
+
+### Check: the waitlist is now empty and patient 4 holds the slot
+GET {{baseUrl}}/waitlist?doctor_id=1&date={{nearCapDay}}
+
+### Joining for a slot that is still free -> 409 (book it directly instead)
+POST {{baseUrl}}/waitlist
+Content-Type: application/json
+
+{
+  "patient_id": 4,
+  "doctor_id": 2,
+  "appt_datetime": "{{nearCapDay}}T10:00"
+}
