@@ -20,4 +20,7 @@ module.exports = Object.freeze({
   // Reports
   BUSY_DAY_THRESHOLD: 0.8, // a doctor-day is "busy" above 80% of capacity
   STATS_UPCOMING_DAYS: 7,
+
+  // Background jobs (waitlist promotions, confirmation messages)
+  JOB_MAX_ATTEMPTS: 3, // then the job is moved to "<queue>:failed"
 });

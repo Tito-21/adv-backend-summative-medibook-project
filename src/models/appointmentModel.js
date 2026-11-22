@@ -2,6 +2,7 @@ const pool = require('../config/db');
 
 const SELECT_APPOINTMENT = `
   SELECT a.appointment_id, a.patient_id, p.full_name AS patient_name,
+         p.email AS patient_email, p.phone AS patient_phone,
          a.doctor_id, d.full_name AS doctor_name, d.specialty, d.room,
          a.appt_datetime, a.amount_paid, a.status, a.booked_at,
          a.cancelled_at, a.refund_amount

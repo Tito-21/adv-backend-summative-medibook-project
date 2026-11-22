@@ -5,9 +5,14 @@ const { withTransaction } = require('../models/transaction');
 const HttpError = require('../utils/HttpError');
 const { MAX_APPOINTMENTS_PER_DAY } = require('../config/businessRules');
 const auditLog = require('../utils/auditLogger');
+const { enqueueConfirmation } = require('./notificationService');
 
 function slotUnavailable(reason, message) {
-  return HttpError.conflict(message, { reason, waitlist_available: true });
+  return HttpError.conflict(message, {
+    reason,
+    waitlist_available: true,
+    join_waitlist: { method: 'POST', path: '/api/waitlist', body: 'same body as this booking' },
+  });
 }
 
 /**
@@ -51,7 +56,8 @@ async function bookAppointment({ patientId, doctorId, slot }) {
     );
   });
 
-  // Only reached after COMMIT. Not awaited: logging must never slow down or fail the booking.
+  // Only reached after COMMIT. Not awaited: logging and queueing must never
+  // slow down or fail the booking (both handle their own errors).
   auditLog.logEvent('APPOINTMENT_BOOKED', {
     appointment_id: appointment.appointment_id,
     patient_id: appointment.patient_id,
@@ -59,6 +65,7 @@ async function bookAppointment({ patientId, doctorId, slot }) {
     appt_datetime: appointment.appt_datetime,
     amount_paid: appointment.amount_paid,
   });
+  enqueueConfirmation(appointment);
 
   return appointment;
 }
