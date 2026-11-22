@@ -1,0 +1,51 @@
+---
+title: MediBook Clinic - Database Schema (3NF)
+config:
+  theme: base
+  themeVariables:
+    primaryColor: "#E8F1FB"
+    primaryBorderColor: "#2F6FB2"
+    primaryTextColor: "#1B2A3A"
+    lineColor: "#2F6FB2"
+    tertiaryColor: "#FFFFFF"
+  er:
+    layoutDirection: LR
+    minEntityWidth: 140
+    entityPadding: 18
+---
+erDiagram
+    direction LR
+
+    patients ||--o{ appointments : "books"
+    appointments }o--|| doctors : "is attended by"
+
+    patients {
+        INT patient_id PK "UNSIGNED AUTO_INCREMENT"
+        VARCHAR(100) full_name "NOT NULL"
+        VARCHAR(255) email UK "NOT NULL, CHECK LIKE '%@%.%'"
+        VARCHAR(20) phone "NOT NULL"
+        DATETIME created_at "NOT NULL DEFAULT CURRENT_TIMESTAMP"
+    }
+
+    doctors {
+        INT doctor_id PK "UNSIGNED AUTO_INCREMENT"
+        VARCHAR(100) full_name "NOT NULL"
+        VARCHAR(255) email UK "NOT NULL, CHECK LIKE '%@%.%'"
+        VARCHAR(100) specialty "NOT NULL"
+        DECIMAL consultation_fee "(8,2) NOT NULL, CHECK >= 0"
+        VARCHAR(10) room UK "NOT NULL"
+        DATETIME created_at "NOT NULL DEFAULT CURRENT_TIMESTAMP"
+    }
+
+    appointments {
+        INT appointment_id PK "UNSIGNED AUTO_INCREMENT"
+        INT patient_id FK, UK "UNSIGNED NOT NULL, ON DELETE RESTRICT, part of UQ2"
+        INT doctor_id FK, UK "UNSIGNED NOT NULL, ON DELETE RESTRICT, part of UQ1"
+        DATETIME appt_datetime "NOT NULL, CHECK minute IN (0,30), CHECK 09:00 to 16:30"
+        DECIMAL amount_paid "(8,2) NOT NULL, CHECK >= 0"
+        ENUM status "('BOOKED','CANCELLED') NOT NULL DEFAULT 'BOOKED'"
+        DATETIME booked_at "NOT NULL DEFAULT CURRENT_TIMESTAMP"
+        DATETIME cancelled_at "NULL if BOOKED, NOT NULL if CANCELLED (CHECK)"
+        DECIMAL refund_amount "(8,2) NULL if BOOKED, NOT NULL if CANCELLED, CHECK 0 to amount_paid"
+        DATETIME active_slot UK "GENERATED: appt_datetime if BOOKED else NULL. UQ1 (doctor_id, active_slot) = no doctor double-booking. UQ2 (patient_id, active_slot)"
+    }
