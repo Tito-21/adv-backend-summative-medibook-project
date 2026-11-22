@@ -1,0 +1,22 @@
+# Statistics and reports - open in VS Code and click "Send Request".
+# Every figure is computed by SQL in src/models/reportModel.js.
+@baseUrl = http://localhost:3000/api
+
+### List of all endpoints
+GET {{baseUrl}}
+
+### Doctor statistics: revenue, upcoming count, next 7 days per day, utilization vs 12/day
+GET {{baseUrl}}/doctors/1/stats
+
+### Statistics for the doctor with no appointments (all zeros, 7 days still listed)
+GET {{baseUrl}}/doctors/4/stats
+
+### Unknown doctor -> 404
+GET {{baseUrl}}/doctors/999/stats
+
+### Doctors report: totals and revenue for EVERY doctor, including zero appointments
+GET {{baseUrl}}/reports/doctors
+
+### Busy days: (doctor, date) with more than 80% of 12 slots booked (10 or more)
+# Seed: Boateng 11/12 (busy), Amponsah 10/12 (busy), Adjei 9/12 (not listed)
+GET {{baseUrl}}/reports/busy-days
