@@ -60,3 +60,29 @@ INSERT INTO appointments (patient_id, doctor_id, appt_datetime, amount_paid) VAL
   (12, 3, TIMESTAMP(CURDATE() + INTERVAL 1 DAY, '10:00:00'), 200.00),
   (5,  2, TIMESTAMP(CURDATE() + INTERVAL 2 DAY, '09:00:00'), 100.00),
   (2,  3, TIMESTAMP(CURDATE() + INTERVAL 5 DAY, '14:30:00'), 200.00);
+
+-- Busy-days threshold (busy = more than 80% of 12 slots, i.e. 10 or more):
+-- Dr. Amponsah: 10 of 12 four days from now -> 83.3% -> busy.
+INSERT INTO appointments (patient_id, doctor_id, appt_datetime, amount_paid) VALUES
+  (1,  3, TIMESTAMP(CURDATE() + INTERVAL 4 DAY, '09:00:00'), 200.00),
+  (2,  3, TIMESTAMP(CURDATE() + INTERVAL 4 DAY, '09:30:00'), 200.00),
+  (3,  3, TIMESTAMP(CURDATE() + INTERVAL 4 DAY, '10:00:00'), 200.00),
+  (4,  3, TIMESTAMP(CURDATE() + INTERVAL 4 DAY, '10:30:00'), 200.00),
+  (5,  3, TIMESTAMP(CURDATE() + INTERVAL 4 DAY, '11:00:00'), 200.00),
+  (6,  3, TIMESTAMP(CURDATE() + INTERVAL 4 DAY, '11:30:00'), 200.00),
+  (7,  3, TIMESTAMP(CURDATE() + INTERVAL 4 DAY, '13:00:00'), 200.00),
+  (8,  3, TIMESTAMP(CURDATE() + INTERVAL 4 DAY, '13:30:00'), 200.00),
+  (9,  3, TIMESTAMP(CURDATE() + INTERVAL 4 DAY, '14:00:00'), 200.00),
+  (10, 3, TIMESTAMP(CURDATE() + INTERVAL 4 DAY, '14:30:00'), 200.00);
+
+-- Dr. Adjei: 9 of 12 six days from now -> 75% -> NOT busy (just under the threshold).
+INSERT INTO appointments (patient_id, doctor_id, appt_datetime, amount_paid) VALUES
+  (1, 2, TIMESTAMP(CURDATE() + INTERVAL 6 DAY, '09:00:00'), 100.00),
+  (2, 2, TIMESTAMP(CURDATE() + INTERVAL 6 DAY, '09:30:00'), 100.00),
+  (3, 2, TIMESTAMP(CURDATE() + INTERVAL 6 DAY, '10:00:00'), 100.00),
+  (4, 2, TIMESTAMP(CURDATE() + INTERVAL 6 DAY, '10:30:00'), 100.00),
+  (5, 2, TIMESTAMP(CURDATE() + INTERVAL 6 DAY, '11:00:00'), 100.00),
+  (6, 2, TIMESTAMP(CURDATE() + INTERVAL 6 DAY, '11:30:00'), 100.00),
+  (7, 2, TIMESTAMP(CURDATE() + INTERVAL 6 DAY, '13:00:00'), 100.00),
+  (8, 2, TIMESTAMP(CURDATE() + INTERVAL 6 DAY, '13:30:00'), 100.00),
+  (9, 2, TIMESTAMP(CURDATE() + INTERVAL 6 DAY, '14:00:00'), 100.00);
