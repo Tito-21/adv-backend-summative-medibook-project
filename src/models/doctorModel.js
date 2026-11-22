@@ -20,6 +20,19 @@ async function findById(doctorId) {
   return rows[0] || null;
 }
 
+/**
+ * Reads a doctor and locks the row until the transaction ends. Every booking
+ * for this doctor locks the same row first, so concurrent bookings for one
+ * doctor run one after another and cannot both take the last slot.
+ */
+async function findByIdForUpdate(doctorId, db) {
+  const [rows] = await db.execute(
+    `SELECT ${SELECT_COLUMNS} FROM doctors WHERE doctor_id = ? FOR UPDATE`,
+    [doctorId],
+  );
+  return rows[0] || null;
+}
+
 async function create({ full_name, email, specialty, consultation_fee, room }) {
   const [result] = await pool.execute(
     `INSERT INTO doctors (full_name, email, specialty, consultation_fee, room)
@@ -45,4 +58,4 @@ async function remove(doctorId) {
   return result.affectedRows > 0;
 }
 
-module.exports = { findAll, findById, create, update, remove };
+module.exports = { findAll, findById, findByIdForUpdate, create, update, remove };

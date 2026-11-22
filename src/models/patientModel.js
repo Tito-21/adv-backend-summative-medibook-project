@@ -11,8 +11,8 @@ async function findAll() {
   return rows;
 }
 
-async function findById(patientId) {
-  const [rows] = await pool.execute(
+async function findById(patientId, db = pool) {
+  const [rows] = await db.execute(
     `SELECT ${SELECT_COLUMNS} FROM patients WHERE patient_id = ?`,
     [patientId],
   );

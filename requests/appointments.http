@@ -1,0 +1,90 @@
+# Appointments API - open in VS Code and click "Send Request" (REST Client extension).
+# Run `npm run db:setup` first: the seed gives Dr. Boateng (doctor 1) 11 of 12
+# slots, 09:00-14:00, three days from today. Replace the dates below with real
+# future dates (format YYYY-MM-DDTHH:MM, clinic local time).
+@baseUrl = http://localhost:3000/api
+@nearCapDay = 2026-11-25
+@freeDay = 2026-11-27
+
+### Book an appointment -> 201 (price comes from the doctor's fee)
+POST {{baseUrl}}/appointments
+Content-Type: application/json
+
+{
+  "patient_id": 3,
+  "doctor_id": 2,
+  "appt_datetime": "{{freeDay}}T10:00"
+}
+
+### View an appointment
+GET {{baseUrl}}/appointments/19
+
+### Slot already taken -> 409 SLOT_TAKEN (waitlist offered)
+POST {{baseUrl}}/appointments
+Content-Type: application/json
+
+{
+  "patient_id": 12,
+  "doctor_id": 1,
+  "appt_datetime": "{{nearCapDay}}T09:00"
+}
+
+### 12th appointment of the day -> 201
+POST {{baseUrl}}/appointments
+Content-Type: application/json
+
+{
+  "patient_id": 12,
+  "doctor_id": 1,
+  "appt_datetime": "{{nearCapDay}}T15:00"
+}
+
+### 13th appointment of the day -> 409 DAY_FULL (waitlist offered)
+POST {{baseUrl}}/appointments
+Content-Type: application/json
+
+{
+  "patient_id": 4,
+  "doctor_id": 1,
+  "appt_datetime": "{{nearCapDay}}T16:00"
+}
+
+### Not on a 30-minute boundary -> 422
+POST {{baseUrl}}/appointments
+Content-Type: application/json
+
+{
+  "patient_id": 3,
+  "doctor_id": 2,
+  "appt_datetime": "{{freeDay}}T09:15"
+}
+
+### Outside working hours -> 422
+POST {{baseUrl}}/appointments
+Content-Type: application/json
+
+{
+  "patient_id": 3,
+  "doctor_id": 2,
+  "appt_datetime": "{{freeDay}}T17:00"
+}
+
+### In the past -> 422
+POST {{baseUrl}}/appointments
+Content-Type: application/json
+
+{
+  "patient_id": 3,
+  "doctor_id": 2,
+  "appt_datetime": "2026-01-05T10:00"
+}
+
+### Malformed date -> 400
+POST {{baseUrl}}/appointments
+Content-Type: application/json
+
+{
+  "patient_id": 3,
+  "doctor_id": 2,
+  "appt_datetime": "next tuesday"
+}
