@@ -1,0 +1,18 @@
+{
+  "languageName": "Français",
+  "intlLocale": "fr-FR",
+  "title": "Avis sur le cours",
+  "instructions": "Veuillez répondre à chaque question en quelques phrases. Il n'y a pas de bonne ou de mauvaise réponse : un avis sincère aide à améliorer le cours.",
+  "dateLabel": "Date du jour :",
+  "languageLabel": "Langue :",
+  "questions": [
+    "Quel sujet de ce cours avez-vous trouvé le plus difficile, et pourquoi ?",
+    "Décrivez une notion que vous n'avez comprise qu'après les travaux pratiques. Qu'est-ce qui vous a permis de la comprendre ?",
+    "Comment votre approche de la conception de bases de données ou d'API a-t-elle évolué depuis le début du trimestre ?",
+    "Que changeriez-vous dans la manière dont ce cours a été enseigné ou évalué ?",
+    "Comment comptez-vous appliquer ce que vous avez appris dans ce cours à l'avenir ?"
+  ],
+  "submit": "Envoyer mon avis",
+  "thankYou": "Merci ! Votre avis a bien été reçu.",
+  "backLink": "Retour au formulaire"
+}
