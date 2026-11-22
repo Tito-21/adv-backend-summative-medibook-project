@@ -4,6 +4,7 @@ const config = require('../config/env');
 const { requireIdParam } = require('../utils/requestHelpers');
 const { validateBookingRequest } = require('../validators/bookingValidator');
 const { bookAppointment } = require('../services/bookingService');
+const { cancelAppointment: cancelWithRefund } = require('../services/cancellationService');
 
 async function getAppointment(req, res) {
   const appointmentId = requireIdParam(req, 'Appointment');
@@ -28,4 +29,18 @@ async function createAppointment(req, res) {
     .json(appointment);
 }
 
-module.exports = { getAppointment, createAppointment };
+async function cancelAppointment(req, res) {
+  const appointmentId = requireIdParam(req, 'Appointment');
+  const { appointment, refund } = await cancelWithRefund(appointmentId, {
+    now: new Date(),
+    timezoneOffset: config.db.timezone,
+  });
+
+  res.json({
+    message: `Appointment cancelled. Refund: ${refund.refund_amount.toFixed(2)} (${refund.refund_percent}%)`,
+    refund,
+    appointment,
+  });
+}
+
+module.exports = { getAppointment, createAppointment, cancelAppointment };
