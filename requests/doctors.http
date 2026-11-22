@@ -1,0 +1,58 @@
+# Doctors API - open in VS Code and click "Send Request" (REST Client extension).
+@baseUrl = http://localhost:3000/api
+
+### List all doctors
+GET {{baseUrl}}/doctors
+
+### Get one doctor
+GET {{baseUrl}}/doctors/1
+
+### Unknown doctor -> 404
+GET {{baseUrl}}/doctors/9999
+
+### Create a doctor -> 201
+POST {{baseUrl}}/doctors
+Content-Type: application/json
+
+{
+  "full_name": "Dr. Nyarko",
+  "email": "nyarko@medibook.clinic",
+  "specialty": "Neurology",
+  "consultation_fee": 180.50,
+  "room": "R-20"
+}
+
+### Invalid fee and missing fields -> 400 with details
+POST {{baseUrl}}/doctors
+Content-Type: application/json
+
+{
+  "full_name": "Dr. Broken",
+  "consultation_fee": -20
+}
+
+### Room already taken -> 409
+POST {{baseUrl}}/doctors
+Content-Type: application/json
+
+{
+  "full_name": "Dr. Roomless",
+  "email": "roomless@medibook.clinic",
+  "specialty": "Oncology",
+  "consultation_fee": 120,
+  "room": "R-12"
+}
+
+### Raise a fee -> 200 (existing appointments keep their amount_paid)
+PATCH {{baseUrl}}/doctors/2
+Content-Type: application/json
+
+{
+  "consultation_fee": 110
+}
+
+### Delete a doctor with appointment history -> 409
+DELETE {{baseUrl}}/doctors/1
+
+### Delete the doctor created above -> 204
+DELETE {{baseUrl}}/doctors/5

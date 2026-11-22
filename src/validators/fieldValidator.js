@@ -16,7 +16,7 @@ const typeMessages = {
   string: 'must be a non-empty string',
   email: 'must be a valid email address',
   phone: 'must be a valid phone number (digits, spaces, dashes, optional leading +)',
-  money: 'must be a non-negative amount with at most 2 decimal places',
+  money: 'must be an amount from 0 to 999999.99 with at most 2 decimal places',
 };
 
 function normalize(type, value) {

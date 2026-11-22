@@ -8,6 +8,9 @@ const pool = mysql.createPool({
   // Return DATETIME columns as 'YYYY-MM-DD HH:MM:SS' strings in clinic time
   // instead of JS Date objects, so API responses are not shifted to UTC.
   dateStrings: true,
+  // Return DECIMAL money columns as numbers (150) rather than strings ('150.00').
+  // Safe here because DECIMAL(8,2) values fit exactly in a JS number.
+  decimalNumbers: true,
 });
 
 // Make NOW() and CURDATE() inside MySQL use the clinic's time zone.
