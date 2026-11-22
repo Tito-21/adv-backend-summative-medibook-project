@@ -35,5 +35,8 @@
   "private": true,
   "jest": {
     "testEnvironment": "node"
+  },
+  "engines": {
+    "node": ">=22"
   }
 }
