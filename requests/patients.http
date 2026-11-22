@@ -1,0 +1,58 @@
+# Patients API - open in VS Code and click "Send Request" (REST Client extension).
+@baseUrl = http://localhost:3000/api
+
+### List all patients
+GET {{baseUrl}}/patients
+
+### Get one patient
+GET {{baseUrl}}/patients/1
+
+### Unknown patient -> 404
+GET {{baseUrl}}/patients/9999
+
+### Invalid id -> 400
+GET {{baseUrl}}/patients/abc
+
+### Create a patient -> 201
+POST {{baseUrl}}/patients
+Content-Type: application/json
+
+{
+  "full_name": "Mariam Issah",
+  "email": "mariam@mail.com",
+  "phone": "0244-777-888"
+}
+
+### Create with invalid data -> 400 with details
+POST {{baseUrl}}/patients
+Content-Type: application/json
+
+{
+  "full_name": "",
+  "email": "not-an-email",
+  "age": 30
+}
+
+### Duplicate email -> 409
+POST {{baseUrl}}/patients
+Content-Type: application/json
+
+{
+  "full_name": "Ama Again",
+  "email": "ama@mail.com",
+  "phone": "0244-000-000"
+}
+
+### Update only the phone -> 200
+PATCH {{baseUrl}}/patients/2
+Content-Type: application/json
+
+{
+  "phone": "0555-999-000"
+}
+
+### Delete a patient with appointment history -> 409
+DELETE {{baseUrl}}/patients/1
+
+### Delete a patient with no appointments -> 204 (use the id created above)
+DELETE {{baseUrl}}/patients/13
