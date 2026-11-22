@@ -8,6 +8,7 @@ const config = {
     database: process.env.DB_NAME,
     user: process.env.DB_USER,
     password: process.env.DB_PASSWORD,
+    timezone: process.env.DB_TIMEZONE || '+00:00',
   },
   redis: {
     host: process.env.REDIS_HOST,
