@@ -16,6 +16,31 @@ async function findById(appointmentId, db = pool) {
   return rows[0] || null;
 }
 
+/** Reads an appointment and locks its row until the transaction ends. */
+async function findByIdForUpdate(appointmentId, db) {
+  const [rows] = await db.execute(
+    `SELECT appointment_id, patient_id, doctor_id, appt_datetime, amount_paid, status
+     FROM appointments WHERE appointment_id = ? FOR UPDATE`,
+    [appointmentId],
+  );
+  return rows[0] || null;
+}
+
+/**
+ * Cancels an appointment and records its refund in ONE statement, so the
+ * cancellation and the refund record can never be saved separately.
+ * Setting status to CANCELLED also makes active_slot NULL, freeing the slot.
+ */
+async function markCancelled({ appointmentId, cancelledAt, refundAmount }, db) {
+  const [result] = await db.execute(
+    `UPDATE appointments
+     SET status = 'CANCELLED', cancelled_at = ?, refund_amount = ?
+     WHERE appointment_id = ? AND status = 'BOOKED'`,
+    [cancelledAt, refundAmount, appointmentId],
+  );
+  return result.affectedRows > 0;
+}
+
 // active_slot is NULL for cancelled appointments, so these queries only ever
 // see live bookings and use the (doctor_id, active_slot) unique index.
 
@@ -59,6 +84,8 @@ async function create({ patientId, doctorId, apptDatetime, amountPaid }, db = po
 
 module.exports = {
   findById,
+  findByIdForUpdate,
+  markCancelled,
   isDoctorSlotTaken,
   isPatientBusyAt,
   countActiveForDoctorOnDate,
