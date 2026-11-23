@@ -1,10 +1,14 @@
 # Appointments API - open in VS Code and click "Send Request" (REST Client extension).
 # Run `npm run db:setup` first: the seed gives Dr. Boateng (doctor 1) 11 of 12
-# slots, 09:00-14:00, three days from today. Replace the dates below with real
-# future dates (format YYYY-MM-DDTHH:MM, clinic local time).
+# slots, 09:00-14:00, three days from today. The dates below are computed from
+# your computer's clock each time you send a request, so they never go stale.
 @baseUrl = http://localhost:3000/api
-@nearCapDay = 2026-11-25
-@freeDay = 2026-11-27
+# today + 3 days: Dr. Boateng's near-cap day in the seed
+@nearCapDay = {{$localDatetime "YYYY-MM-DD" 3 d}}
+# today + 5 days: a day with free slots for Dr. Adjei
+@freeDay = {{$localDatetime "YYYY-MM-DD" 5 d}}
+# yesterday: for the "in the past" example
+@pastDay = {{$localDatetime "YYYY-MM-DD" -1 d}}
 
 ### Book an appointment -> 201 (price comes from the doctor's fee)
 POST {{baseUrl}}/appointments
@@ -76,7 +80,7 @@ Content-Type: application/json
 {
   "patient_id": 3,
   "doctor_id": 2,
-  "appt_datetime": "2026-01-05T10:00"
+  "appt_datetime": "{{pastDay}}T10:00"
 }
 
 ### Malformed date -> 400

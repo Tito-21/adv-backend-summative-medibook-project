@@ -4,9 +4,10 @@
 #   2. a 13th booking gets 409 DAY_FULL with a waitlist offer
 #   3. join the waitlist below
 #   4. cancel one of that day's appointments -> the worker books the waitlisted patient
-# Set @nearCapDay to today + 3 days (the seed's near-cap day for Dr. Boateng).
+# @nearCapDay is computed from your computer's clock: today + 3 days, the seed's
+# near-cap day for Dr. Boateng.
 @baseUrl = http://localhost:3000/api
-@nearCapDay = 2026-11-25
+@nearCapDay = {{$localDatetime "YYYY-MM-DD" 3 d}}
 
 ### Join the waitlist after a 409 (same body as the booking) -> 201 with position
 POST {{baseUrl}}/waitlist
