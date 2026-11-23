@@ -40,4 +40,4 @@ function calculateRefund(amountPaid, appointmentAt, cancelledAt) {
   };
 }
 
-module.exports = { hoursOfNotice, refundPercentFor, calculateRefund };
+module.exports = { refundPercentFor, calculateRefund };
