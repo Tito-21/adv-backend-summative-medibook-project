@@ -4,6 +4,8 @@ Backend for a community clinic: patients book 30-minute slots with doctors (09:0
 
 **Stack:** Node.js, Express 5, MySQL 8 (`mysql2`, parameterized queries only, no ORM), Redis 7 (`ioredis`), Jest.
 
+**Demo video:** <https://youtu.be/A3UwqYsShLg>
+
 The original assignment brief is kept in [docs/assignment-brief.md](docs/assignment-brief.md).
 
 ---
@@ -255,6 +257,8 @@ npm test
 ---
 
 ## 7. Demo walkthrough
+
+Recorded demo: <https://youtu.be/A3UwqYsShLg>
 
 After `npm run db:setup` (ideally after 10:00, so the refund tiers below land as described), with `npm start` and `npm run worker` running:
 
